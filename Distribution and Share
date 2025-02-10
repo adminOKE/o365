@@ -1,0 +1,49 @@
+#Liste de Diffusion en Groupe de Securité
+
+#region   creation LD mail enabled security
+$bal = "listeName@test.com"
+$display = "display This"
+
+New-DistributionGroup -Name $bal -DisplayName $display -Type "security" -Alias "listeName" -PrimarySmtpAddress $bal
+Add-DistributionGroupMember -Identity $bal -Member '$membre1', '2', '3' -BypassSecurityGroupManagerCheck
+set-DistributionGroup -Identity $bal -ManagedBy @{add='$owner'} 
+set-DistributionGroup -Identity $bal -ManagedBy @{remove='admin@test.com'}
+
+#endregion
+#################################################################################################################
+
+#region ajout deleg en masse sans excel
+
+$UserMailBoxs = @(
+"1@test"
+"2@test.com"
+"3@test.com"
+"4@test.com"
+                 )
+
+
+$ListeErreur = @()
+
+$ShareMailBox = "BalPartage@test.com"
+
+$smtp= "BalPartage"
+$affich = "Bal Partage"
+
+
+foreach ($UserMailBox in $UserMailBoxs)
+        {
+    try { 
+       
+        # ajout delegation
+       Add-MailboxPermission -Identity $ShareMailBox -user $UserMailBox -AccessRights FullAccess -AutoMapping $true  # | Out-File -Append -FilePath "C:\Temp\resultLog.txt"
+        Add-RecipientPermission  -Identity $ShareMailBox -Trustee $UserMailBox  -AccessRights Sendas -Confirm:$false 
+       
+       }
+    catch {
+
+     Write-Host $UserMailBox
+    
+    }
+    }
+
+#endregion    deleg en masse sans excel
