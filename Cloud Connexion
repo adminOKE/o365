@@ -1,0 +1,20 @@
+###connexion Cloud 
+
+####### | |############
+
+$username = Read-Host "Nom d'utilisateur ?"
+                        if ($username -eq '')
+                           {
+                            $username = "$env:USERNAME"   
+                           }
+Get-Credential -Message "ton pass pour pass!!" -username $username | Export-Clixml -Path "c:\temp\BigPass.xml"
+$Cred = Import-Clixml -Path "c:\temp\BigPass.xml"
+
+##region connexion via modules
+Connect-AzureAD -TenantId $tenantID -Credential $cred  
+Start-Sleep 3
+Connect-ExchangeOnline -Credential $cred    
+Connect-MsolService -Credential $cred   
+Connect-MicrosoftTeams -Credential
+Connect-Graph -Credential $cred
+connect-AzAccount
