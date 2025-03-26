@@ -1,0 +1,14 @@
+###gestion attribut AD on premise -> Cloud
+
+$User=Read-Host "saisir le login  "
+$domaine = =read-host "saisir domaine"
+$domaineNO = $domaine.Split('.')[0]
+
+Get-ADUser $User | Set-Aduser -Replace @{mail="$User@$domaine"; extensionAttribute1="$domaine"; preferredLanguage="fr"; msExchUsageLocation="FR"; ProxyAddresses="SMTP:$User@$domaine",
+"smtp:$User@$domaineNo.mail.onmicrosoft.com", "smtp:$User@$domaineNo.onmicrosoft.com"; targetAddress="SMTP:$User@$domaineNO.onmicrosoft.com"}
+
+#syncro
+Invoke-Command -ComputerName $serv-AAD -ScriptBlock {start-ADSyncSyncCycle -PolicyType Delta} 
+#verification
+Get-AdUser -identity  $User -Properties * | Select mail, extensionAttribute1, preferredLanguage, msExchUsageLocation, ProxyAddresses, targetAddress
+
